@@ -1,0 +1,8 @@
+1.scrapy 是基于twisted的框架,异步IO性能好, 便于扩展,内置很多功能,CSS和xpath; requests和beautifulsoup是库.
+2.create virtualenv: pipenv install scrapy
+3.reset interpreter: pipenv shell -> which python3 -> pycharm add local interpreter
+4.pipenv shell -> scrapy startproject xxx -> cd xxx & scrapy genspider jobbole blog.jobbole.com
+
+Created spider 'jobbole' using template 'basic' in module:
+BoleSpider.spiders.jobbole
+
