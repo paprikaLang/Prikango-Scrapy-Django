@@ -29,3 +29,21 @@ execute(["scrapy", "crawl", "jobbole"])
 >>> result = response.xpath('//*[@id="post-110287"]/div[1]/h1/text()');
 >>> result.extract()[0];
 result看做 monad 可以继续xpath分析查询, extract之后解包得值但已经不是Selector了
+
+6. extract_first() 为空时有默认值 不会像 extract()[0] 抛错
+
+7. [el for el in tags if not el ...]  filter
+
+8. "//span[contains(@class, 'bookmark-btn')]/text()"  span 的 class 不唯一时, contains
+
+
+
+
+
+
+
+
+
+
+
+
