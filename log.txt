@@ -6,3 +6,26 @@
 Created spider 'jobbole' using template 'basic' in module:
 BoleSpider.spiders.jobbole
 
+5. 1)scrapy.cmdline.excute 调试爬虫结果
+from scrapy.cmdline import execute
+execute(["scrapy", "crawl", "jobbole"])
+   2)scrapy shell http://blog.jobbole.com/110287/ 终端调试
+2019-01-01 16:24:58 [scrapy.extensions.telnet] DEBUG: Telnet console listening on 127.0.0.1:6023
+2019-01-01 16:24:58 [scrapy.core.engine] INFO: Spider opened
+2019-01-01 16:24:58 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://blog.jobbole.com/110287/> (referer: None)
+[s] Available Scrapy objects:
+[s]   scrapy     scrapy module (contains scrapy.Request, scrapy.Selector, etc)
+[s]   crawler    <scrapy.crawler.Crawler object at 0x10e1fca90>
+[s]   item       {}
+[s]   request    <GET http://blog.jobbole.com/110287/>
+[s]   response   <200 http://blog.jobbole.com/110287/>
+[s]   settings   <scrapy.settings.Settings object at 0x10f1ec710>
+[s]   spider     <DefaultSpider 'default' at 0x10f4b2c18>
+[s] Useful shortcuts:
+[s]   fetch(url[, redirect=True]) Fetch URL and update local objects (by default, redirects are followed)
+[s]   fetch(req)                  Fetch a scrapy.Request and update local objects
+[s]   shelp()           Shell help (print this help)
+[s]   view(response)    View response in a browser
+>>> result = response.xpath('//*[@id="post-110287"]/div[1]/h1/text()');
+>>> result.extract()[0];
+result看做 monad 可以继续xpath分析查询, extract之后解包得值但已经不是Selector了
