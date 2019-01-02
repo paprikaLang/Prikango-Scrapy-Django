@@ -4,6 +4,7 @@ import re
 from scrapy.http import Request
 from urllib import parse
 from BoleSpider.items import BolePostItem
+from BoleSpider.utils.tools import to_md5
 
 class JobboleSpider(scrapy.Spider):
     name = 'jobbole'
@@ -29,7 +30,7 @@ class JobboleSpider(scrapy.Spider):
         # css选择器
         title = response.css(".entry-header h1::text").extract_first().strip()
         create_date = response.css(".entry-meta-hide-on-mobile::text").extract_first().strip().replace("·", "").strip()
-        votes = response.css(".vote-post-up h10::text").extract_first()
+        votes = int(response.css(".vote-post-up h10::text").extract_first())
         bookmarks = response.css(".bookmark-btn::text").extract_first()
         match_re = re.match(".*?(\d+).*", bookmarks)
         if match_re:
@@ -60,6 +61,7 @@ class JobboleSpider(scrapy.Spider):
         post_item["bookmarks"] = bookmarks
         post_item["body"] = body
         post_item["tags"] = tags
+        post_item["url_object_id"] = to_md5(response.url)
 
         yield post_item
 

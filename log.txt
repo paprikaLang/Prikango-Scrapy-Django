@@ -56,9 +56,9 @@ project_dir = os.path.abspath(os.path.dirname(__file__)) //相对路径
 IMAGES_STORE = os.path.join(project_dir, 'images')  // 保存图片的文件夹
 
 
+12. hashlib.md5  Python3以后所有的字符都是Unicode, 要encode("utf-8")之后才能被MD5
 
-
-
+Unicode-object must be encoded before hashing
 
 
 

@@ -65,12 +65,17 @@ ROBOTSTXT_OBEY = False
 # Configure item pipelines
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-   'BoleSpider.pipelines.BolespiderPipeline': 300,
-   'scrapy.pipelines.images.ImagesPipeline': 1,
+   # 'BoleSpider.pipelines.BoleJsonWithEncodingPipeline': 2,
+   'BoleSpider.pipelines.BoleJsonExporterPipeline': 2,
+   # 'scrapy.pipelines.images.ImagesPipeline': 1,
+   'BoleSpider.pipelines.BoleImagePipeline': 1,
 }
 IMAGES_URLS_FIELD = "preview_img"
 project_dir = os.path.abspath(os.path.dirname(__file__))
 IMAGES_STORE = os.path.join(project_dir, 'images')
+
+# IMAGE_MIN_HEIGHT = 100
+# IMAGE_MIN_WIDTH = 100
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://doc.scrapy.org/en/latest/topics/autothrottle.html
