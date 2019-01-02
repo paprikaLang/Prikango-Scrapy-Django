@@ -38,6 +38,22 @@ result看做 monad 可以继续xpath分析查询, extract之后解包得值但�
 
 9. yield Request(url=parse.urljoin(response.url, post_url), callback=self.parse_post) yield阻塞,待循环当前页面20个post_url结束后, 才会执行下面的next_page再爬取20个post_url.
 
+10. items
+
+不同于普通的model, items可以将属性yield给pipelines:
+
+yield post_item
+
+11. settings.py 配置 scrapy 图片下载
+
+ITEM_PIPELINES = {
+   'BoleSpider.pipelines.BolespiderPipeline': 300,
+   'scrapy.pipelines.images.ImagesPipeline': 1,  //数字低的在管道的最开端
+}
+
+IMAGES_URLS_FIELD = "preview_img"  //要处理的图片的字段
+project_dir = os.path.abspath(os.path.dirname(__file__)) //相对路径
+IMAGES_STORE = os.path.join(project_dir, 'images')  // 保存图片的文件夹
 
 
 
