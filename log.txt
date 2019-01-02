@@ -36,7 +36,7 @@ result看做 monad 可以继续xpath分析查询, extract之后解包得值但�
 
 8. "//span[contains(@class, 'bookmark-btn')]/text()"  span 的 class 不唯一时, contains
 
-
+9. yield Request(url=parse.urljoin(response.url, post_url), callback=self.parse_post) yield阻塞,待循环当前页面20个post_url结束后, 才会执行下面的next_page再爬取20个post_url.
 
 
 
