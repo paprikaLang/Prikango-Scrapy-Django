@@ -88,8 +88,8 @@ class BoleJsonWithEncodingPipeline:
 class BoleImagePipeline(ImagesPipeline):
 
     def item_completed(self, results, item, info):
-
-        for ok, value in results:
-             item["preview_img_path"] = value["path"]
+        if "preview_img" in item:
+            for ok, value in results:
+                 item["preview_img_path"] = value["path"]
 
         return item

@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 import scrapy
-import re
 from scrapy.http import Request
 from urllib import parse
-from BoleSpider.items import BolePostItem
+from BoleSpider.items import BolePostItem, BolePostItemLoader
 from BoleSpider.utils.tools import to_md5
-import datetime
+
 
 class JobboleSpider(scrapy.Spider):
     name = 'jobbole'
@@ -21,55 +20,74 @@ class JobboleSpider(scrapy.Spider):
             image_url = post_node.css("img::attr(src)").extract_first("")
             yield Request(url=parse.urljoin(response.url, post_url), meta={"preview_img": image_url}, callback=self.parse_post)
 
-        next_page_url = response.css(".next.page-numbers::attr(href)").extract_first("")
-        if next_page_url:
-            yield Request(url=parse.urljoin(response.url, next_page_url), callback=self.parse)
+        # next_page_url = response.css(".next.page-numbers::attr(href)").extract_first("")
+        # if next_page_url:
+        #     yield Request(url=parse.urljoin(response.url, next_page_url), callback=self.parse)
 
     def parse_post(self, response):
-        post_item = BolePostItem()
 
-        # css选择器
-        title = response.css(".entry-header h1::text").extract_first().strip()
-        create_date = response.css(".entry-meta-hide-on-mobile::text").extract_first().strip().replace("·", "").strip()
-        votes = int(response.css(".vote-post-up h10::text").extract_first())
-        bookmarks = response.css(".bookmark-btn::text").extract_first()
-        match_re = re.match(".*?(\d+).*", bookmarks)
-        if match_re:
-            bookmarks = int(match_re.group(1))
-        else:
-            bookmarks = 0
-
-        comments = response.css("a[href='#article-comment'] span::text").extract_first()
-        match_re = re.match(".*?(\d+).*", comments)
-        if match_re:
-            comments = int(match_re.group(1))
-        else:
-            comments = 0
-
-        body = response.css("div.entry").extract_first()
-
-        tags = response.css("p.entry-meta-hide-on-mobile a::text").extract()
-        tags = [el for el in tags if not el.strip().endswith("评论")]
-        tags = ",".join(tags)
         preview_img = response.meta.get("preview_img", "")
 
-        try:
-            create_date = datetime.datetime.strptime(create_date, "%Y/%m/%d").date()
-        except Exception as e:
-            create_date = datetime.datetime.now().date()
+        item_loader = BolePostItemLoader(item=BolePostItem(), response=response)
+        item_loader.add_css("title", ".entry-header h1::text")
+        item_loader.add_value("url", response.url)
+        item_loader.add_value("url_object_id", to_md5(response.url))
+        item_loader.add_css("create_date", "p.entry-meta-hide-on-mobile::text")
+        item_loader.add_value("preview_img", [preview_img])
+        item_loader.add_css("votes", ".vote-post-up h10::text")
+        item_loader.add_css("comments", "a[href='#article-comment'] span::text")
+        item_loader.add_css("bookmarks", ".bookmark-btn::text")
+        item_loader.add_css("tags", "p.entry-meta-hide-on-mobile a::text")
+        item_loader.add_css("body", "div.entry")
 
-        post_item["create_date"] = create_date
-        post_item["title"] = title
-        post_item["url"] = response.url
-        post_item["preview_img"] = [preview_img]
-        post_item["votes"] = votes
-        post_item["comments"] = comments
-        post_item["bookmarks"] = bookmarks
-        post_item["body"] = body
-        post_item["tags"] = tags
-        post_item["url_object_id"] = to_md5(response.url)
+        post_item = item_loader.load_item()
 
         yield post_item
+
+
+
+        # post_item = BolePostItem()
+
+        # css选择器
+        # title = response.css(".entry-header h1::text").extract_first().strip()
+        # create_date = response.css(".entry-meta-hide-on-mobile::text").extract_first().strip().replace("·", "").strip()
+        # votes = int(response.css(".vote-post-up h10::text").extract_first())
+        # bookmarks = response.css(".bookmark-btn::text").extract_first()
+        # match_re = re.match(".*?(\d+).*", bookmarks)
+        # if match_re:
+        #     bookmarks = int(match_re.group(1))
+        # else:
+        #     bookmarks = 0
+        #
+        # comments = response.css("a[href='#article-comment'] span::text").extract_first()
+        # match_re = re.match(".*?(\d+).*", comments)
+        # if match_re:
+        #     comments = int(match_re.group(1))
+        # else:
+        #     comments = 0
+        #
+        # body = response.css("div.entry").extract_first()
+        #
+        # tags = response.css("p.entry-meta-hide-on-mobile a::text").extract()
+        # tags = [el for el in tags if not el.strip().endswith("评论")]
+        # tags = ",".join(tags)
+        # preview_img = response.meta.get("preview_img", "")
+        #
+        # try:
+        #     create_date = datetime.datetime.strptime(create_date, "%Y/%m/%d").date()
+        # except Exception as e:
+        #     create_date = datetime.datetime.now().date()
+        #
+        # post_item["create_date"] = create_date
+        # post_item["title"] = title
+        # post_item["url"] = response.url
+        # post_item["preview_img"] = [preview_img]
+        # post_item["votes"] = votes
+        # post_item["comments"] = comments
+        # post_item["bookmarks"] = bookmarks
+        # post_item["body"] = body
+        # post_item["tags"] = tags
+        # post_item["url_object_id"] = to_md5(response.url)
 
 
         # title = response.xpath('//*[@id="post-110287"]/div[1]/h1/text()').extract_first()

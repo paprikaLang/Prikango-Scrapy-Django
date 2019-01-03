@@ -61,5 +61,14 @@ IMAGES_STORE = os.path.join(project_dir, 'images')  // 保存图片的文件夹
 Unicode-object must be encoded before hashing
 
 
+13. twisted 支持连接池异步存储MySQL数据
 
+from twisted.enterprise import adbapi
+dbpool = adbapi.ConnectionPool("MySQLdb", **dbparms)
+self.dbpool.runInteraction(self.to_insert, item)
+
+
+14. itemloader 中对 add_css 来的 ite m经过 input_processor,output_processor的 MapCompose (MapCompose(按顺序执行括号里面的函数处理 item))成为数据库所需的数据 再 yield 给 pipelines(image, json, mysql等). 类似于JS proxy的get/set hook
+
+15. takefirst 类似 extract()[0], 
 
