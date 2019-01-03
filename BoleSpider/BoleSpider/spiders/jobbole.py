@@ -5,6 +5,7 @@ from scrapy.http import Request
 from urllib import parse
 from BoleSpider.items import BolePostItem
 from BoleSpider.utils.tools import to_md5
+import datetime
 
 class JobboleSpider(scrapy.Spider):
     name = 'jobbole'
@@ -52,9 +53,14 @@ class JobboleSpider(scrapy.Spider):
         tags = ",".join(tags)
         preview_img = response.meta.get("preview_img", "")
 
+        try:
+            create_date = datetime.datetime.strptime(create_date, "%Y/%m/%d").date()
+        except Exception as e:
+            create_date = datetime.datetime.now().date()
+
+        post_item["create_date"] = create_date
         post_item["title"] = title
         post_item["url"] = response.url
-        post_item["create_date"] = create_date
         post_item["preview_img"] = [preview_img]
         post_item["votes"] = votes
         post_item["comments"] = comments

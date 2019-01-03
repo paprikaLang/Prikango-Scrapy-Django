@@ -66,9 +66,10 @@ ROBOTSTXT_OBEY = False
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
    # 'BoleSpider.pipelines.BoleJsonWithEncodingPipeline': 2,
-   'BoleSpider.pipelines.BoleJsonExporterPipeline': 2,
+   # 'BoleSpider.pipelines.BoleJsonExporterPipeline': 2,
    # 'scrapy.pipelines.images.ImagesPipeline': 1,
-   'BoleSpider.pipelines.BoleImagePipeline': 1,
+   # 'BoleSpider.pipelines.BoleImagePipeline': 1,
+   'BoleSpider.pipelines.MysqlTwistedPipeline': 1
 }
 IMAGES_URLS_FIELD = "preview_img"
 project_dir = os.path.abspath(os.path.dirname(__file__))
@@ -97,3 +98,8 @@ IMAGES_STORE = os.path.join(project_dir, 'images')
 #HTTPCACHE_DIR = 'httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+
+MYSQL_HOST = "127.0.0.1"
+MYSQL_DBNAME = "spider_scrapy"
+MYSQL_USER = "root"
+MYSQL_PASSWORD = ""
