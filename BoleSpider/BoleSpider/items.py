@@ -79,3 +79,4 @@ class BolePostItem(scrapy.Item):
         output_processor=Join(",")
     )
     body = scrapy.Field()
+
