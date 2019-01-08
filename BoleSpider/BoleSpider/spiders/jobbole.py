@@ -4,7 +4,8 @@ from scrapy.http import Request
 from urllib import parse
 from BoleSpider.items import BolePostItem, BolePostItemLoader
 from BoleSpider.utils.tools import to_md5
-
+from scrapy.xlib.pydispatch import dispatcher
+from scrapy import signals
 
 class JobboleSpider(scrapy.Spider):
 
@@ -12,7 +13,22 @@ class JobboleSpider(scrapy.Spider):
     allowed_domains = ['blog.jobbole.com']
     start_urls = ['http://blog.jobbole.com/all-posts/']
 
+    # 收集不同状态码下的页面信息 301 302 200...
+    handle_httpstatus_list = [404]
+
+    def __init__(self, **kwargs):
+        self.fail_urls = []
+        dispatcher.connect(self.handle_spider_closed, signals.spider_closed)
+
+    def handle_spider_closed(self, spider, reason):
+        self.crawler.stats.set_value("failed_urls", ",".join(self.fail_urls))
+
     def parse(self, response):
+
+        if response.status == 404:
+            self.fail_urls.append(response.url)
+            self.crawler.stats.inc_value("failed_url")
+
         page_posts_nodes = response.css("#archive .floated-thumb .post-thumb a")
 
         for post_node in page_posts_nodes:

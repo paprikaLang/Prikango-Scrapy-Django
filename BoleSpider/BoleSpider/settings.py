@@ -70,13 +70,13 @@ RANDOM_UA_TYPE = "chrome"
 # Configure item pipelines
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-   'BoleSpider.pipelines.BoleImagePipeline': 1,
-   # 'BoleSpider.pipelines.BoleJsonWithEncodingPipeline': 2,
-   'BoleSpider.pipelines.BoleJsonExporterPipeline': 1,
-   # 'scrapy.pipelines.images.ImagesPipeline': 1,
-   'BoleSpider.pipelines.MysqlTwistedPipeline': 1,
+    # 'BoleSpider.pipelines.BoleImagePipeline': 1,
+    # 'BoleSpider.pipelines.BoleJsonWithEncodingPipeline': 2,
+    'BoleSpider.pipelines.BoleJsonExporterPipeline': 1,
+    # 'scrapy.pipelines.images.ImagesPipeline': 1,
+    'BoleSpider.pipelines.MysqlTwistedPipeline': 1,
 
-   # 'BoleSpider.pipelines.BoleSpiderPipeline': 300
+    # 'BoleSpider.pipelines.BoleSpiderPipeline': 300
 }
 IMAGES_URLS_FIELD = "preview_img"
 project_dir = os.path.abspath(os.path.dirname(__file__))
