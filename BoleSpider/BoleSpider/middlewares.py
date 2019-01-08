@@ -6,6 +6,8 @@
 # https://doc.scrapy.org/en/latest/topics/spider-middleware.html
 
 from scrapy import signals
+from scrapy.http import HtmlResponse
+from fake_useragent import UserAgent
 
 
 class BolespiderSpiderMiddleware(object):
@@ -101,3 +103,31 @@ class BolespiderDownloaderMiddleware(object):
 
     def spider_opened(self, spider):
         spider.logger.info('Spider opened: %s' % spider.name)
+
+
+class LagouPageMiddleware(object):
+
+    def process_request(self, request, spider):
+
+        if spider.name == 'lagou':
+            spider.browser.get(request.url)
+            # time.sleep(2)
+            print(f"访问:{request.url}")
+
+            return HtmlResponse(url=spider.browser.current_url, body=spider.browser.page_source, encoding="utf-8", request=request)
+
+
+class FakeUserAgentMiddleware(object):
+    def __init__(self, crawler):
+        super(FakeUserAgentMiddleware, self).__init__()
+        self.ua = UserAgent()
+        self.ua_type = crawler.settings.get("RANDOM_UA_TYPE", "chrome")
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        return cls(crawler)
+
+    def process_request(self, request, spider):
+        def get_ua():
+            return getattr(self.ua, self.ua_type)
+        request.headers.setdefault('User-Agent', get_ua())

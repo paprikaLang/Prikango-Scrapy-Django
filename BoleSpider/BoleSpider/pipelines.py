@@ -47,12 +47,8 @@ class MysqlTwistedPipeline(object):
         print(failure)
 
     def to_insert(self, cursor, item):
-
-        insert_sql = """
-                    insert into article(title, url, url_object_id, votes, body)
-                    VALUES(%s, %s, %s, %s, %s)
-                """
-        cursor.execute(insert_sql, (item["title"], item["url"], item["url_object_id"], item["votes"], item["body"]))
+        insert_sql, params = item.get_insert_sql()
+        cursor.execute(insert_sql, params)
 
 
 class BoleJsonExporterPipeline(object):

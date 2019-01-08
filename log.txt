@@ -72,6 +72,9 @@ self.dbpool.runInteraction(self.to_insert, item)
 
 15. takefirst 类似 extract()[0]
 
+16. scrapy genspider --list  basic/crawl/csvfeed/xmlfeed
+
+
 
 
 
