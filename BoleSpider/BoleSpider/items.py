@@ -10,7 +10,12 @@ from scrapy.loader import ItemLoader
 from scrapy.loader.processors import MapCompose, TakeFirst, Join
 import datetime
 import re
-from BoleSpider.settings import SQL_DATETIME_FORMAT, SQL_DATE_FORMAT
+from BoleSpider.models.es_type import JobboleType
+from w3lib.html import remove_tags
+# from BoleSpider.settings import SQL_DATETIME_FORMAT, SQL_DATE_FORMAT
+from elasticsearch_dsl.connections import connections
+
+es = connections.create_connection(JobboleType._doc_type.name)
 
 
 class BolespiderItem(scrapy.Item):
@@ -48,6 +53,27 @@ def eliminate_comment_tag(value):
 
 def eliminate_takeFirst(value):
     return value
+
+
+def gen_suggest(index, info_tuples):
+    used_words = set()
+    suggests = []
+    for text, weight in info_tuples:
+        if text:
+            words = es.indices.analyze(index=index,
+                                       body={'text': text, 'analyzer': 'ik_max_word'})
+            total_words = set()
+            for w in words["tokens"]:
+                if len(w["token"]) > 1:
+                    total_words.add(w["token"])
+            new_words = total_words - used_words
+        else:
+            new_words = set()
+        if new_words:
+            suggests.append({"input": list(new_words), "weight": weight})
+        used_words = new_words
+
+    return suggests
 
 
 class BolePostItemLoader(ItemLoader):
@@ -89,6 +115,25 @@ class BolePostItem(scrapy.Item):
         params = (self["title"], self["url"], self["url_object_id"], self["votes"], self["body"])
 
         return insert_sql, params
+
+    def save_to_elasticsearch(self):
+        post = JobboleType()
+        post.title = self['title']
+        post.create_date = self['create_date']
+        post.url = self['url']
+        post.meta.id = self['url_object_id']
+        post.preview_img = self['preview_img']
+        if "preview_img_path" in self:
+            post.preview_img_path = self['preview_img_path']
+        post.votes = self['votes']
+        post.comments = self['comments']
+        post.bookmarks = self['bookmarks']
+        post.tags = self['tags']
+        post.body = remove_tags(self['body'])
+
+        post.suggest = gen_suggest(JobboleType._index._name, ((post.title, 10), (post.tags, 7)))
+
+        post.save()
 
 
 def remove_splash(value):

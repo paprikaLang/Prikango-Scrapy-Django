@@ -12,6 +12,8 @@ from scrapy.exporters import JsonItemExporter
 import MySQLdb
 import MySQLdb.cursors
 from twisted.enterprise import adbapi
+from BoleSpider.models.es_type import JobboleType
+from w3lib.html import remove_tags
 
 
 class BoleSpiderPipeline(object):
@@ -88,4 +90,10 @@ class BoleImagePipeline(ImagesPipeline):
             for ok, value in results:
                  item["preview_img_path"] = value["path"]
 
+        return item
+
+
+class ElasticsearchPipeline(object):
+    def process_item(self, item, spider):
+        item.save_to_elasticsearch()
         return item

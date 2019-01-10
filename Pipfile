@@ -12,6 +12,8 @@ pillow = "*"
 mysqlclient = "*"
 selenium = "*"
 fake-useragent = "*"
+redis = "*"
+elasticsearch-dsl = "*"
 
 [requires]
 python_version = "3.6"

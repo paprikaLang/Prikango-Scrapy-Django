@@ -72,9 +72,10 @@ RANDOM_UA_TYPE = "chrome"
 ITEM_PIPELINES = {
     # 'BoleSpider.pipelines.BoleImagePipeline': 1,
     # 'BoleSpider.pipelines.BoleJsonWithEncodingPipeline': 2,
-    'BoleSpider.pipelines.BoleJsonExporterPipeline': 1,
+    # 'BoleSpider.pipelines.BoleJsonExporterPipeline': 1,
     # 'scrapy.pipelines.images.ImagesPipeline': 1,
-    'BoleSpider.pipelines.MysqlTwistedPipeline': 1,
+    # 'BoleSpider.pipelines.MysqlTwistedPipeline': 1,
+    'BoleSpider.pipelines.ElasticsearchPipeline': 1,
 
     # 'BoleSpider.pipelines.BoleSpiderPipeline': 300
 }
