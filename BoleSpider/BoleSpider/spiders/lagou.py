@@ -9,6 +9,7 @@ from BoleSpider.items import LagouJobItemLoader, LagouJobItem
 from BoleSpider.utils.tools import to_md5
 import datetime
 
+
 class LagouSpider(scrapy.Spider):
     name = 'lagou'
     allowed_domains = ['www.lagou.com']
