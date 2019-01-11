@@ -26,7 +26,7 @@ class LagouSpider(scrapy.Spider):
         self.browser.quit()
 
     def parse(self, response):
-        zhaopin_url = response.css(".sidebar .mainNavs .menu_box:nth-child(1) .menu_main .category-list a::attr(href)").extract_first()
+        zhaopin_url = response.css(".sidebar .mainNavs .menu_box:nth-child(1) .menu_main .category-list a::attr(href)").extract()[1]
         # for zhaopin_url in zhaopin_urls:
         yield Request(url=parse.urljoin(response.url, zhaopin_url), callback=self.parse_language)
 

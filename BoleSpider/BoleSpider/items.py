@@ -10,13 +10,15 @@ from scrapy.loader import ItemLoader
 from scrapy.loader.processors import MapCompose, TakeFirst, Join
 import datetime
 import re
-from BoleSpider.models.es_type import JobboleType
+from BoleSpider.models.es_type import JobboleType, LagouType
 from w3lib.html import remove_tags
+import redis
 # from BoleSpider.settings import SQL_DATETIME_FORMAT, SQL_DATE_FORMAT
 from elasticsearch_dsl.connections import connections
 
 es = connections.create_connection(JobboleType._doc_type.name)
 
+redis_client = redis.StrictRedis()
 
 class BolespiderItem(scrapy.Item):
     # define the fields for your item here like:
@@ -25,6 +27,7 @@ class BolespiderItem(scrapy.Item):
 
 
 def convert_date(value):
+    value = value.strip().replace("·", "").strip()
     try:
         create_date = datetime.datetime.strptime(value, "%Y/%m/%d").date()
     except Exception as e:
@@ -135,10 +138,12 @@ class BolePostItem(scrapy.Item):
 
         post.save()
 
+        redis_client.incr("jobbole_total_count")
+
 
 def remove_splash(value):
     # 去掉工作城市的斜线
-    return value.replace("/","")
+    return value.replace("/", "")
 
 
 def handle_jobaddr(value):
@@ -148,7 +153,7 @@ def handle_jobaddr(value):
 
 
 class LagouJobItemLoader(ItemLoader):
-    # 自定义itemloader
+    # 自定义item loader
     default_output_processor = TakeFirst()
 
 
@@ -192,5 +197,27 @@ class LagouJobItem(scrapy.Item):
         # self["crawl_time"].strftime(SQL_DATETIME_FORMAT),
         return insert_sql, params
 
+    def save_to_elasticsearch(self):
+        post = LagouType()
+        post.title = self["title"]
+        post.tags = self["tags"]
+        post.url = self["url"]
+        post.url_object_id = self["url_object_id"]
+        post.company_name = self["company_name"]
+        post.company_url = self["company_url"]
+        post.crawl_time = self["crawl_time"]
+        post.publish_time = self["publish_time"]
+        post.degree_need = self["degree_need"]
+        post.work_years = self["work_years"]
+        post.salary = self["salary"]
+        post.job_addr = self["job_addr"]
+        post.job_advantage = self["job_advantage"]
+        post.job_city = self["job_city"]
+        post.job_desc = self["job_desc"]
+        post.job_type = self["job_type"]
 
+        post.suggest = gen_suggest(LagouType._index._name, ((post.title, 10), (post.tags, 7), (post.job_desc, 5)))
 
+        post.save()
+
+        redis_client.incr("lagou_total_count")
