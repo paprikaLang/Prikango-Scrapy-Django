@@ -1,7 +1,7 @@
 @charset "utf-8";
 html{*overflow:auto;}
 #hd{padding:20px 10px;}
-#bd{margin-bottom:40px;}
+#bd{margin-bottom:30px;}
 .logo{float:left;margin-right:30px; height:33px;}
 /*input搜索区域*/
 .inputArea{float:left;position:relative;}

@@ -4,9 +4,11 @@ from search.models import JobboleType
 from django.http import HttpResponse
 import json
 from elasticsearch import Elasticsearch
+from datetime import datetime
+import redis
 
 client = Elasticsearch(hosts=["127.0.0.1"])
-
+redis_client = redis.StrictRedis()
 
 class SearchSuggest(TemplateView):
     def get(self, request):
@@ -31,6 +33,13 @@ class SearchSuggest(TemplateView):
 class SearchView(TemplateView):
     def get(self, request):
         key_words = request.GET.get('q', "")
+        page_id = request.GET.get('p', "")
+        try:
+            page = int(page_id)
+        except:
+            page = 1
+
+        start_time = datetime.now()
         response = client.search(
             index="jobbole",
             body={
@@ -40,7 +49,7 @@ class SearchView(TemplateView):
                         "fields": ["tags", "title", "body"]
                     }
                 },
-                "from": 0,
+                "from": (page - 1)*10,
                 "size": 10,
                 "highlight": {
                     "pre_tags": ["<span class='keyWord'>"],
@@ -52,7 +61,14 @@ class SearchView(TemplateView):
                 }
             }
         )
+        end_time = datetime.now()
+        jobbole_count = int(redis_client.get("jobbole_total_count"))
+        durine_time = (end_time - start_time).total_seconds()
         total_hits = response["hits"]["total"]
+        if (page % 10) > 0:
+            page_nums = int(total_hits / 10) + 1
+        else:
+            page_nums = int(total_hits / 10)
         hit_list = []
         for hit in response["hits"]["hits"]:
             hit_dict = {}
@@ -61,9 +77,9 @@ class SearchView(TemplateView):
             else:
                 hit_dict["title"] = hit["_source"]["title"]
             if "body" in hit["highlight"]:
-                hit_dict["content"] = "".join(hit["highlight"]["body"])[:500]
+                hit_dict["content"] = "".join(hit["highlight"]["body"])[:1000]
             else:
-                hit_dict["content"] = hit["_source"]["body"][:500]
+                hit_dict["content"] = hit["_source"]["body"][:1000]
 
             hit_dict["create_date"] = hit["_source"]["create_date"]
             hit_dict["url"] = hit["_source"]["url"]
@@ -73,5 +89,9 @@ class SearchView(TemplateView):
 
         return render(request, "result.html", {"all_hits": hit_list,
                                                "total_nums": total_hits,
+                                               "page": page,
+                                               "page_nums": page_nums,
+                                               "jobbole_count": jobbole_count,
+                                               "last_seconds": durine_time,
                                                "key_words": key_words})
 

@@ -14,15 +14,14 @@
 	<div id="hd" class="ue-clear">
     	<a href="/home"><div class="logo"></div></a>
         <div class="inputArea">
-        	<input type="text" class="searchInput" value="{{ key_words }}"/>
+        	<input type="text" class="searchInput" name="keyWords" value="{{ key_words }}"/>
             <input type="button" class="searchButton" onclick="add_search()"/>
         </div>
     </div>
     <div class="nav">
     	<ul class="searchList">
-            <li class="searchItem current" data-type="article">文章</li>
-            <li class="searchItem" data-type="question">问答</li>
-            <li class="searchItem" data-type="job">职位</li>
+            <li class="searchItem current" data-type="article">article</li>
+            <li class="searchItem" data-type="job">job</li>
         </ul>
     </div>
 	<div id="bd" class="ue-clear">
@@ -34,10 +33,6 @@
                 	<li>
                     	<span class="name">伯乐在线</span>
 						<span class="unit">({{ jobbole_count }})</span>
-                    </li>
-                    <li>
-                    	<span class="name">知乎</span>
-						<span class="unit">(9862)</span>
                     </li>
                     <li>
                     	<span class="name">拉勾网</span>
@@ -85,7 +80,7 @@
                                 </span>
                                 <span class="info">
                                     <label>发布时间：</label>
-                                    <span class="value">2017-04-23</span>
+                                    <span class="value">{{ hit.create_date }}</span>
                                 </span>
                             </div>
                         </div>
@@ -94,9 +89,7 @@
                 <!-- 分页 -->
                 <div class="pagination ue-clear"></div>
                 <!-- 相关搜索 -->
-                
-                
-                
+
             </div>
             <div class="historyArea">
             	<div class="hotSearch">
@@ -160,7 +153,7 @@
 		}
         
     });
-	var key_words = "java"
+    var key_words = $("input[name='keyWords']").val()
 	//分页
 	$(".pagination").pagination({{ total_nums }}, {
 		current_page :{{ page|add:'-1' }}, //当前页码
@@ -169,6 +162,7 @@
 		callback :pageselectCallback
 	});
 	function pageselectCallback(page_id, jq) {
+	    page_id += 1
 		window.location.href=search_url+'?q='+key_words+'&p='+page_id
 	}
 	
