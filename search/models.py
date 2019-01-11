@@ -9,6 +9,7 @@ class CustomAnalyzer(_CustomAnalyzer):
     def get_analysis_definition(self):
         return
 
+
 ik_analyzer = CustomAnalyzer("ik_max_word", filter=["lowercase"])
 
 
@@ -34,6 +35,36 @@ class JobboleType(Document):
 
     class Meta:
         doc_type = "article"
+
+
+class LagouType(Document):
+    suggest = Completion(analyzer=ik_analyzer)
+    title = Text(analyzer="ik_max_word")
+    url = Keyword()
+    url_object_id = Keyword()
+    salary = Keyword()
+    job_city = Keyword()
+    work_years = Keyword()
+    degree_need = Keyword()
+    job_type = Keyword()
+    publish_time = Keyword()
+    job_advantage = Keyword()
+    job_desc = Text(analyzer="ik_max_word")
+    job_addr = Keyword()
+    company_name = Keyword()
+    company_url = Keyword()
+    tags = Text(analyzer="ik_max_word")
+    crawl_time = Date()
+
+    class Index:
+        name = "lagou"
+        settings = {
+            "number_of_shards": 2,
+        }
+
+    class Meta:
+        doc_type = "job"
+
 
 if __name__ == "__main__":
     JobboleType.init()

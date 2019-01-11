@@ -16,12 +16,6 @@
         	<h1 class="title">
             	<div class="logo large"></div>
             </h1>
-            <div class="nav ue-clear">
-            	<ul class="searchList">
-                    <li class="searchItem current" data-type="article">article</li>
-                    <li class="searchItem" data-type="job">job</li>
-                </ul>
-            </div>
             <div class="inputArea">
             	<input type="text" class="searchInput" />
                 <input type="button" class="searchButton" onclick="add_search()" />
@@ -62,12 +56,6 @@
     var suggest_url = "{% url "suggest" %}"
     var search_url = "{% url 'search' %}"
 
-
-	$('.searchList').on('click', '.searchItem', function(){
-		$('.searchList .searchItem').removeClass('current');
-		$(this).addClass('current');
-	});
-
     function removeByValue(arr, val) {
       for(var i=0; i<arr.length; i++) {
         if(arr[i] == val) {
@@ -87,7 +75,7 @@
                 cache: false,
                 type: 'get',
                 dataType:'json',
-                url:suggest_url+"?s="+searchText+"&s_type="+$(".searchItem.current").attr('data-type'),
+                url:suggest_url+"?s="+searchText+"&s_type=article",
                 async: true,
                 success: function(data) {
                     for (var i=0;i<data.length;i++){
@@ -132,7 +120,7 @@
             MapSearchArr();
         }
 
-        window.location.href=search_url+'?q='+val+"&s_type="+$(".searchItem.current").attr('data-type')
+        window.location.href=search_url+'?q='+val+"&s_type=article"
 
     }
 
