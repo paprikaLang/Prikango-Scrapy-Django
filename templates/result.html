@@ -95,7 +95,7 @@
             	<div class="hotSearch">
                 	<h6>热门搜索</h6>
                     <ul class="historyList">
-                        {% for search_word in topn_search %}
+                        {% for search_word in top_search %}
                             <li><a href="/search?q={{ search_word }}">{{ search_word }}</a></li>
                         {% endfor %}
                     </ul>

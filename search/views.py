@@ -33,6 +33,11 @@ class SearchSuggest(TemplateView):
 class SearchView(TemplateView):
     def get(self, request):
         key_words = request.GET.get('q', "")
+        redis_client.zincrby("search_keywords_sort", 1, key_words)
+        sorted_hot_keywords = []
+        for s in redis_client.zrangebyscore("search_keywords_sort", "-inf", "+inf", start=0, num=5):
+            s = str(s, encoding="utf-8")
+            sorted_hot_keywords.append(s)
         page_id = request.GET.get('p', "")
         try:
             page = int(page_id)
@@ -93,5 +98,13 @@ class SearchView(TemplateView):
                                                "page_nums": page_nums,
                                                "jobbole_count": jobbole_count,
                                                "last_seconds": durine_time,
+                                               "top_search": sorted_hot_keywords,
                                                "key_words": key_words})
 
+class HomeView(TemplateView):
+    def get(self, request):
+        sorted_hot_keywords = []
+        for s in redis_client.zrangebyscore("search_keywords_sort", "-inf", "+inf", start=0, num=5):
+            s = str(s, encoding="utf-8")
+            sorted_hot_keywords.append(s)
+        return render(request, "index.html", {"top_search": sorted_hot_keywords})
