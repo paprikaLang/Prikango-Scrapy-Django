@@ -87,12 +87,12 @@ class SearchView(TemplateView):
                     else:
                         hit_dict["title"] = hit["_source"]["title"]
                     if "job_desc" in hit["highlight"]:
-                        hit_dict["content"] = "".join(hit["highlight"]["job_desc"])[:200]
+                        hit_dict["content"] = "".join(hit["highlight"]["job_desc"])[:500]
                     else:
-                        hit_dict["content"] = hit["_source"]["job_desc"][:200]
+                        hit_dict["content"] = hit["_source"]["job_desc"][:500]
                 else:
                     hit_dict["title"] = hit["_source"]["title"]
-                    hit_dict["content"] = hit["_source"]["job_desc"][:200]
+                    hit_dict["content"] = hit["_source"]["job_desc"][:500]
 
                 hit_dict["create_date"] = hit["_source"]["publish_time"]
                 hit_dict["url"] = hit["_source"]["url"]
